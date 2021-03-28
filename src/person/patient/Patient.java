@@ -4,7 +4,7 @@ import person.Person;
 
 public abstract class Patient extends Person {
     private static int idPatient = 0;
-    
+    public Patient(){ idPatient ++; }
     public Patient(String firstName, String lastName, int age){
         super(firstName, lastName, age);
         idPatient++;
@@ -16,7 +16,7 @@ public abstract class Patient extends Person {
 
     @Override
     public String toString() {
-        return "Patient{}";
+        return super.toString() + ", status: patient, ";
     }
 }
 
