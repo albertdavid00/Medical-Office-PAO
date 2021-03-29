@@ -1,23 +1,23 @@
 package office;
 
+import appointment.Appointment;
 import person.employee.*;
 import person.patient.Adult;
 import person.patient.Child;
 import person.patient.Patient;
+import prescription.Prescription;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 
 // Singleton class
 
 public class MedicalOffice {
-    private static String officeName; //câmp de instanță
+    private static String officeName; // câmp de instanță
     private static MedicalOffice medicalOffice; //1
     private ArrayList<Patient> patients;
     private ArrayList<Employee> employees;
+    private Map<Appointment, Prescription> appointmentsAndPrescriptions;
 
 
     private MedicalOffice() {
@@ -25,6 +25,7 @@ public class MedicalOffice {
         officeName = "Catena";
         employees = new ArrayList<>();
         patients = new ArrayList<>();
+        appointmentsAndPrescriptions = new HashMap<>();
 
     }
 
@@ -94,9 +95,27 @@ public class MedicalOffice {
         return emp;
     }
 
-    public void showEmployees(){ System.out.println(this.employees); }
+    public void showEmployees(){
+        int numberOfEmployees = this.employees.size();
+        if(numberOfEmployees == 0){
+            System.out.println("The medical office has no employees.");
+            return;
+        }
+        for(int i = 0; i < numberOfEmployees; i++){
+            System.out.println((i+1) + ". " + this.employees.get(i) + "\n");
+        }
+    }
 
-    public void showPatients(){ System.out.println(this.patients); }
+    public void showPatients(){
+        int numberOfPatients = this.patients.size();
+        if(numberOfPatients == 0){
+            System.out.println("The medical office has no patients.");
+            return;
+        }
+        for(int i = 0; i < numberOfPatients; i++){
+            System.out.println((i+1) + ". " + this.patients.get(i) + "\n");
+        }
+    }
 
     public Patient addPatient() throws Exception {
         Patient patient = null;
@@ -142,5 +161,85 @@ public class MedicalOffice {
         }
         return patient;
     }
+    public Appointment addAppointment() throws Exception {
+        Appointment appointment;
+        Scanner scan = new Scanner(System.in);
+        boolean invalidAppointment;
+        String date, startTime, endTime;
+        do {
+            System.out.println("Enter date (dd/mm/yyyy): ");
+            date = scan.nextLine();
+            System.out.println("Enter start time (hh:mm): ");
+            startTime = scan.nextLine();
+            System.out.println("Enter end time (hh:mm): ");
+            endTime = scan.nextLine();
+            invalidAppointment = checkAppointmentOverlap(date, startTime, endTime);
+            if(invalidAppointment){
+                System.out.println("Appointments are overlapping. Please pick another date or time.");
+            }
+        } while (invalidAppointment);
 
+        System.out.println("Assign existing patient (1) or add a new patient (2)?");
+        int choice = scan.nextInt();
+        scan.nextLine();
+        Patient patient = null;
+        if (choice == 1) {
+            if (patients.size() == 0) {
+                System.out.println("There are no existing patients. Please add a new one.\n");
+                patient = this.addPatient();
+            } else {
+                this.showPatients();
+                System.out.println("Select the id of the patient: ");
+                int id = scan.nextInt();
+                while (id - 1 > patients.size()) {
+                    System.out.println("Invalid id! Enter valid id: ");
+                    id = scan.nextInt();
+                }
+                scan.nextLine();
+                patient = patients.get(id - 1);
+            }
+        } else if (choice == 2) {
+            patient = this.addPatient();
+        }
+
+        this.showEmployees();
+        System.out.println("Select the id of the employee for the appointment:");
+        int EmployeeId = scan.nextInt();
+        while (EmployeeId - 1 > employees.size()) {
+            System.out.println("Invalid id! Enter valid id: ");
+            EmployeeId = scan.nextInt();
+        }
+        Employee employee = employees.get(EmployeeId - 1);
+
+        System.out.println("Enter price: ");
+        Double price = scan.nextDouble();
+
+        appointment = new Appointment(date, startTime, endTime, patient, employee, price);
+        appointmentsAndPrescriptions.put(appointment, null);
+        return appointment;
+    }
+    private boolean checkAppointmentOverlap(String date, String startTime, String endTime){
+        Iterator it = appointmentsAndPrescriptions.entrySet().iterator();
+        while (it.hasNext()){
+            Map.Entry mapElement = (Map.Entry) it.next();
+            Appointment appointment = (Appointment) mapElement.getKey();
+            String appDate, stTime, eTime;
+            appDate = appointment.getDate();
+            stTime = appointment.getStartTime();
+            eTime = appointment.getEndTime();
+
+            if(date.equals(appDate)){    // appointments are in the same day
+                if (startTime.compareTo(stTime) <= 0){
+                    if(endTime.compareTo(stTime) > 0){      // overlap
+                        return true;
+                    }
+                }else{
+                    if (startTime.compareTo(eTime) < 0){    // overlap
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

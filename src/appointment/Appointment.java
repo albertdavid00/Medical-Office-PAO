@@ -25,7 +25,6 @@ public class Appointment {
         this.employee = employee;
         this.price = price;
         this.discounted = false;
-        applyDiscount();
     }
 
     public String getDate() { return date; }
@@ -70,7 +69,7 @@ public class Appointment {
         mm = endTime.substring(3, 5);
         int endHour = Integer.parseInt(hh);
         int endMinutes = Integer.parseInt(mm);
-        int duration = 0;
+        int duration;
         duration = (endHour - startHour) * 60 + (endMinutes - startMinutes);
         return duration; // in minutes
     }

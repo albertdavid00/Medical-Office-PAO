@@ -40,8 +40,9 @@ public class Main {
 //        lm.add(med2);
 //        Prescription p = new Prescription(x, doctor, Diagnosis.CommonCold, lm);
 //        System.out.println(p);
-        MedicalOffice office = MedicalOffice.getInstance();
-        Patient pat = office.addPatient();
-        office.showPatients();
+//        MedicalOffice office = MedicalOffice.getInstance();
+//        Patient pat = office.addPatient();
+//        office.showPatients();
+        Menu.menu();
     }
 }
