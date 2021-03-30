@@ -4,9 +4,10 @@ import person.employee.Employee;
 import person.patient.Child;
 import person.patient.Patient;
 
+import java.util.Comparator;
 import java.util.Objects;
 
-public class Appointment {
+public class Appointment implements Comparable<Appointment> {
 
     private static final Double discount = 0.5;
     private boolean discounted;
@@ -51,7 +52,7 @@ public class Appointment {
 
     public void setPrice(Double price) { this.price = price; }
 
-    private void applyDiscount(){
+    public void applyDiscount(){
         if(!this.discounted) {
             if (patient instanceof Child) {
                 this.price *= discount;
@@ -77,12 +78,11 @@ public class Appointment {
     @Override
     public String toString() {
         return "Appointment{" +
-                "discounted=" + discounted +
-                ", date='" + date + '\'' +
-                ", startTime='" + startTime + '\'' +
-                ", endTime='" + endTime + '\'' +
-                ", patient=" + patient.getFirstName() + " " + patient.getLastName() +
-                ", employee=" + employee.getFirstName() + " " + employee.getLastName() +
+                "date=" + date +
+                ", Time= " + startTime + " - " + endTime +
+                ", Patient=" + patient.getFirstName() + " " + patient.getLastName() +
+                ", Employee=" + employee.getFirstName() + " " + employee.getLastName() +
+                ", discounted='" + discounted + '\'' +
                 ", price=" + price +
                 '}';
     }
@@ -104,5 +104,15 @@ public class Appointment {
     @Override
     public int hashCode() {
         return Objects.hash(discounted, date, startTime, endTime, patient, employee, price);
+    }
+
+    @Override
+    public int compareTo(Appointment o) {
+        if(this.date.compareTo(o.date) > 0){
+            return 1;
+        }else if (this.date.compareTo(o.date) < 0){
+            return -1;
+        }
+        return this.startTime.compareTo(o.startTime);
     }
 }

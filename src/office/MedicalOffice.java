@@ -5,6 +5,8 @@ import person.employee.*;
 import person.patient.Adult;
 import person.patient.Child;
 import person.patient.Patient;
+import prescription.Diagnosis;
+import prescription.Medicine;
 import prescription.Prescription;
 
 import java.lang.reflect.Array;
@@ -25,7 +27,7 @@ public class MedicalOffice {
         officeName = "Catena";
         employees = new ArrayList<>();
         patients = new ArrayList<>();
-        appointmentsAndPrescriptions = new HashMap<>();
+        appointmentsAndPrescriptions = new TreeMap<>();
 
     }
 
@@ -37,6 +39,13 @@ public class MedicalOffice {
 
         return medicalOffice;
 
+    }
+
+    public void addEmployee(Employee emp){
+        this.employees.add(emp);
+    }
+    public void addPatient(Patient patient){
+        this.patients.add(patient);
     }
 
     public static void showMedicalOffice(){
@@ -151,8 +160,14 @@ public class MedicalOffice {
                     age = scanner.nextInt();
                 }
                 scanner.nextLine();
+
                 System.out.println("Phone number: ");
                 String phone = scanner.nextLine();
+                while(!phone.matches("^0[0-9]{9}$")){
+                    System.out.println("Invalid phone number. Enter a valid one: ");
+                    phone = scanner.nextLine();
+                }
+
                 patient = new Adult(fName, lName, age, phone);
                 patients.add(patient);
             }
@@ -191,7 +206,7 @@ public class MedicalOffice {
                 this.showPatients();
                 System.out.println("Select the id of the patient: ");
                 int id = scan.nextInt();
-                while (id - 1 > patients.size()) {
+                while (id - 1 >= patients.size() || id < 1) {
                     System.out.println("Invalid id! Enter valid id: ");
                     id = scan.nextInt();
                 }
@@ -201,11 +216,11 @@ public class MedicalOffice {
         } else if (choice == 2) {
             patient = this.addPatient();
         }
-
+        System.out.println("Employees: ");
         this.showEmployees();
         System.out.println("Select the id of the employee for the appointment:");
         int EmployeeId = scan.nextInt();
-        while (EmployeeId - 1 > employees.size()) {
+        while (EmployeeId - 1 >= employees.size() || EmployeeId < 1) {
             System.out.println("Invalid id! Enter valid id: ");
             EmployeeId = scan.nextInt();
         }
@@ -218,11 +233,13 @@ public class MedicalOffice {
         appointmentsAndPrescriptions.put(appointment, null);
         return appointment;
     }
+
     private boolean checkAppointmentOverlap(String date, String startTime, String endTime){
         Iterator it = appointmentsAndPrescriptions.entrySet().iterator();
         while (it.hasNext()){
             Map.Entry mapElement = (Map.Entry) it.next();
             Appointment appointment = (Appointment) mapElement.getKey();
+
             String appDate, stTime, eTime;
             appDate = appointment.getDate();
             stTime = appointment.getStartTime();
@@ -241,5 +258,154 @@ public class MedicalOffice {
             }
         }
         return false;
+    }
+
+    public void showAppointments(){
+        System.out.println("Appointments: ");
+        int nrOfApps = appointmentsAndPrescriptions.size();
+        int i = 1;
+        for(Map.Entry<Appointment, Prescription> entry: appointmentsAndPrescriptions.entrySet()){
+            System.out.println((i++) + ". " + entry.getKey());
+        }
+    }
+
+    public Prescription addPrescription(){
+        System.out.println("Patients: ");
+        this.showPatients();
+        System.out.println("Pick the id of a patient to write the prescription to:");
+        Scanner scan = new Scanner(System.in);
+        int id = scan.nextInt();
+
+        while(id - 1 >= patients.size() || id < 1){
+            System.out.println("Invalid id. Please input a valid id: ");
+            id = scan.nextInt();
+        }
+
+        Patient patient = patients.get(id - 1);
+
+        System.out.println("Pick a diagnosis for the patient (Dermatitis / CommonCold / Flu / " +
+                            "Depression / Arrhythmia / Glaucoma / Seizure / Diabetes): ");
+        String strDiag = scan.nextLine().toLowerCase();
+        strDiag = strDiag.substring(0, 1).toUpperCase() + strDiag.substring(1);
+        Diagnosis diagnosis;
+        if(strDiag.equals("Commoncold")){
+            diagnosis = Diagnosis.CommonCold;
+        }else {
+            diagnosis = Diagnosis.valueOf(strDiag);
+        }
+
+        List<Medicine> meds = prescribeMeds();
+        Prescription prescription;
+        this.showAppointments();
+
+        System.out.println("Pick the appointment (id) where the prescription was made: ");
+        id = scan.nextInt();
+
+        int i = 1;
+        Appointment app = null;
+        Employee employee = null;
+
+        for(Map.Entry<Appointment, Prescription> entry: appointmentsAndPrescriptions.entrySet()) {
+            if(id == i){
+                app = entry.getKey();
+                employee = app.getEmployee();
+                break;
+            }
+            i++;
+        }
+        if (app != null) {
+            prescription = new Prescription(patient, employee, diagnosis, meds);
+            appointmentsAndPrescriptions.put(app, prescription);
+        }
+        else{
+            System.out.println("Invalid id...");
+            return null;
+        }
+        return  prescription;
+    }
+
+    public List<Medicine> prescribeMeds(){
+        System.out.println("Add medicine to prescription");
+        Scanner scan = new Scanner(System.in);
+
+        Medicine med;
+        List<Medicine> meds = new LinkedList<>();
+
+        String medName;
+        int price, quantity;
+        boolean addNewMeds = true;
+
+        do{
+            System.out.println("\tEnter name of medicine: ");
+            medName = scan.nextLine();
+
+            System.out.println("\tEnter quantity (mg): ");
+            quantity = scan.nextInt();
+
+            System.out.println("\tEnter price: ");
+            price = scan.nextInt();
+
+            med = new Medicine(medName, price, quantity);
+            meds.add(med);
+
+            System.out.println("Enter new medicine? Yes(1) / No(2): ");
+            int option = scan.nextInt();
+
+            if(option == 1){
+                scan.nextLine();
+            }else{
+                addNewMeds = false;
+            }
+        }while (addNewMeds);
+
+        return meds;
+    }
+
+    public void showPrescriptions(){
+        this.showPatients();
+        System.out.println("Pick the patient(id): ");
+
+        Scanner scan = new Scanner(System.in);
+        int id = scan.nextInt();
+
+        while (id - 1 >= patients.size() || id < 1) {
+            System.out.println("Invalid id! Enter valid id: ");
+            id = scan.nextInt();
+        }
+
+        Patient patient = patients.get(id - 1);
+        List<Prescription> prescList = new LinkedList<Prescription>();
+        for(Map.Entry<Appointment, Prescription> entry: appointmentsAndPrescriptions.entrySet()){
+            Prescription prescription = entry.getValue();
+            if(prescription.getPatient().equals(patient)){
+                prescList.add(prescription);
+            }
+        }
+        if (prescList.isEmpty()){
+            System.out.println("The patient has no prescriptions.");
+        }else{
+            for(int i = 0; i<prescList.size(); i++){
+                System.out.println((i+1) + ". " + prescList.get(i));
+            }
+        }
+    }
+
+    public void customSortEmployees(){
+        System.out.println("Choose criteria:\n\t1. Annual Income\n\t2. Years of experience");
+        Scanner scan = new Scanner(System.in);
+        int choice = scan.nextInt();
+        if(choice == 1){
+            employees.sort((e1, e2) -> (int) (e2.annualIncome() - e1.annualIncome()));
+        }
+        else {
+            employees.sort((e1, e2) -> e2.getYearsOfExperience() - e1.getYearsOfExperience());
+        }
+    }
+
+    public void discountForChildren(){
+        for(Map.Entry<Appointment, Prescription> entry: appointmentsAndPrescriptions.entrySet()){
+            Appointment appointment = entry.getKey();
+            appointment.applyDiscount();
+        }
     }
 }
