@@ -64,12 +64,12 @@
     * Calculate duration of the appointment
     * Apply discount for children
     
-####Enums
+#### Enums
 * Shift
 * Specialization 
 * Diagnosis
     
-###Service Class
+### Service Class
 * MedicalOffice
     * Singleton pattern
         * Office Name
