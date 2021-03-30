@@ -1,5 +1,6 @@
 package person.patient;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Adult extends Patient{
@@ -26,21 +27,18 @@ public class Adult extends Patient{
         return super.toString() + "phoneNumber: '" + phoneNumber + '\'';
     }
 
-    //    @Override
-//    public Adult read() throws Exception {
-//        Scanner scanner = new Scanner(System.in);
-//        System.out.println("Adult's first name: ");
-//        String fName = scanner.nextLine();
-//        System.out.println("Adult's last name: ");
-//        String lName = scanner.nextLine();
-//
-//        System.out.println("Adult's age (>18): ");
-//        int age = scanner.nextInt();
-//
-//        System.out.println("Phone number: ");
-//        String phone = scanner.nextLine();
-//
-//        Adult adult = new Adult(fName, lName, age, phone);
-//        return adult;
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Adult adult = (Adult) o;
+        return Objects.equals(phoneNumber, adult.phoneNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), phoneNumber);
+    }
+
 }

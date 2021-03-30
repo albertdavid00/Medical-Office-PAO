@@ -26,7 +26,7 @@ public class Menu {
         System.out.println("10. Apply discount for children's appointments.\n");
         System.out.println("0. Exit.\n\n");
     }
-    public static void menu() throws Exception {
+    public static void menuOutput() throws Exception {
         MedicalOffice office = MedicalOffice.getInstance();
         Employee asistent = new Assistant("Jane", "Wilson", 27, 2500, 5, 100);
         Employee doctor = new Doctor("John", "Carter", 39, 5000, 15, Shift.Night, Specialization.Pediatry);
