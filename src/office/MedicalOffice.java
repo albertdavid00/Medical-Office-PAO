@@ -6,6 +6,7 @@ import person.patient.Adult;
 import person.patient.Child;
 import person.patient.Patient;
 import prescription.Diagnosis;
+import prescription.MedicalRecords;
 import prescription.Medicine;
 import prescription.Prescription;
 
@@ -282,7 +283,8 @@ public class MedicalOffice {
         }
 
         Patient patient = patients.get(id - 1);
-
+        scan.nextLine();
+        
         System.out.println("Pick a diagnosis for the patient (Dermatitis / CommonCold / Flu / " +
                             "Depression / Arrhythmia / Glaucoma / Seizure / Diabetes): ");
         String strDiag = scan.nextLine().toLowerCase();
@@ -406,6 +408,68 @@ public class MedicalOffice {
         for(Map.Entry<Appointment, Prescription> entry: appointmentsAndPrescriptions.entrySet()){
             Appointment appointment = entry.getKey();
             appointment.applyDiscount();
+        }
+    }
+
+    public boolean addMedicalRecords() throws Exception {
+        Scanner scan = new Scanner(System.in);
+        this.showPatients();
+        System.out.println("Select the patient to write the medical records for.");
+        int id = scan.nextInt();
+        while (id - 1 >= patients.size() || id < 1) {
+            System.out.println("Invalid id! Enter valid id: ");
+            id = scan.nextInt();
+        }
+        Patient patient = patients.get(id - 1);
+        if(patient.getRecords() != null){
+            return false;
+        }
+        System.out.println("Enter height (m): ");
+        int height = scan.nextInt();
+        System.out.println("Enter weight (kg): ");
+        int weight = scan.nextInt();
+        scan.nextLine();
+        String gender;
+        try {
+            System.out.println("Enter gender (male / female): ");
+            gender = scan.nextLine();
+            if(!gender.equalsIgnoreCase("male") && !gender.equalsIgnoreCase("female"))
+                throw new Exception("Invalid gender!");
+        }catch (Exception e){
+            System.out.println("Invalid gender");
+            return false;
+        }
+
+        System.out.println("Enter systolic blood pressure (normal pressure: 90 - 120): ");
+        int systolicPressure = scan.nextInt();
+        System.out.println("Enter diastolic blood pressure (normal pressure: 60 - 80): ");
+        int diastolicPressure = scan.nextInt();
+        System.out.println("Enter average heart rate (bpm): ");
+        int avgHeartRate = scan.nextInt();
+        patient.setRecords(new MedicalRecords(height, weight, gender, systolicPressure, diastolicPressure, avgHeartRate));
+        return true;
+    }
+
+    public void showMedicalRecords(){
+        int id = 1;
+        for(int i = 0; i < patients.size(); i++){
+            Patient patient = patients.get(i);
+            if (patient.getRecords() != null){
+                System.out.println(id + ". " + patient + "\n\t" + patient.getRecords());
+                id ++;
+            }
+        }
+    }
+
+    public void showHeartDiseaseRisk(){
+        int id = 1;
+        for(int i = 0; i < patients.size(); i++){
+            Patient patient = patients.get(i);
+            if (patient.getRecords() != null){
+                System.out.println(id + ". " + patient.getFirstName() + " "+ patient.getLastName() + "" +
+                        " status: " + patient.getType() + "\tHeart Disease Risk: " + patient.calculateHeartRisk());
+                id ++;
+            }
         }
     }
 }

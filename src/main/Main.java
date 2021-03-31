@@ -7,6 +7,7 @@ import person.employee.Shift;
 import person.employee.Specialization;
 import person.patient.*;
 import prescription.Diagnosis;
+import prescription.MedicalRecords;
 import prescription.Medicine;
 import prescription.Prescription;
 
@@ -18,5 +19,9 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         Menu.menuOutput();
+//        Patient x = new Child("George", "Coman", 13, "0736369123", "sad");
+//        x.setRecords(new MedicalRecords());
+//        System.out.println(x.getRecords());
+//        System.out.println(x.getType());
     }
 }

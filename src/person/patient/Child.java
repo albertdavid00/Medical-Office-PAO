@@ -26,6 +26,9 @@ public class Child extends Patient {
     public void setFatherName(String fatherName) { this.fatherName = fatherName; }
 
     @Override
+    public String getType(){ return "Child"; }
+
+    @Override
     public String toString() {
         return super.toString() +
                 "Mother's name: '" + motherName + '\'' +

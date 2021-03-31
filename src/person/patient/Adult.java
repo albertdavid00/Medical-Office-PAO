@@ -23,6 +23,9 @@ public class Adult extends Patient{
     }
 
     @Override
+    public String getType(){ return "Adult"; }
+
+    @Override
     public String toString() {
         return super.toString() + "phoneNumber: '" + phoneNumber + '\'';
     }

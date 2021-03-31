@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class Menu {
 
-    public static void main_menu(){
+    private static void main_menu(){
         System.out.println("======================\n");
         System.out.println("\tMedical Office\n");
         System.out.println("======================\n");
@@ -24,6 +24,9 @@ public class Menu {
         System.out.println("8. Show all prescriptions for a certain patient.\n");
         System.out.println("9. Sort employees by a custom criteria.\n");
         System.out.println("10. Apply discount for children's appointments.\n");
+        System.out.println("11. Add medical records for a patient.\n");
+        System.out.println("12. Show medical records for every patient.\n");
+        System.out.println("13. Calculate Heart Disease Risk for the patients with medical records.\n");
         System.out.println("0. Exit.\n\n");
     }
     public static void menuOutput() throws Exception {
@@ -91,6 +94,25 @@ public class Menu {
             else if (option == 10){
                 office.discountForChildren();
                 System.out.println("50% discount applied successfully! Press Any Key To Continue...");
+                new java.util.Scanner(System.in).nextLine();
+            }
+            else if (option == 11){
+                boolean check = office.addMedicalRecords();
+                if(check) {
+                    System.out.println("Medical records added successfully! Press Any Key To Continue...");
+                }else{
+                    System.out.println("Patient already has records or the entered data are invalid. Press Any Key to Continue...");
+                }
+                new java.util.Scanner(System.in).nextLine();
+            }
+            else if (option == 12){
+                office.showMedicalRecords();
+                System.out.println("Press Any Key To Continue...");
+                new java.util.Scanner(System.in).nextLine();
+            }
+            else if (option == 13){
+                office.showHeartDiseaseRisk();
+                System.out.println("Press Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
             }
             else if (option != 0) {

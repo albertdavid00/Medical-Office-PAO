@@ -10,8 +10,11 @@
 * Patient
     * abstract class
     * extends Person
+    * aggregation
         - Id
-
+        - Medical Records
+    * calculate heart disease risk
+    
 * Adult 
     * extends Patient
         - Phone number
@@ -64,6 +67,12 @@
     * Calculate duration of the appointment
     * Apply discount for children
     
+* MedicalRecords
+    * gender    
+    * height, weight
+    * systolic / diastolic blood pressure
+    * average heart rate
+    
 ####Enums
 * Shift
 * Specialization 
@@ -94,6 +103,9 @@
             - Annual Income
             - Years of Experience
         10. Apply discount for all of children's appointments
+        11. Add medical records to a patient
+        12. Show medical records for all patients
+        13. Calculate Heart Disease Risk based on medical records' data 
     
 * Menu 
     * calls all the actions from above 
