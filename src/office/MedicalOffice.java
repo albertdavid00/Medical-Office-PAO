@@ -10,7 +10,9 @@ import prescription.MedicalRecords;
 import prescription.Medicine;
 import prescription.Prescription;
 
+import java.io.*;
 import java.lang.reflect.Array;
+import java.sql.Timestamp;
 import java.util.*;
 
 // Singleton class
@@ -21,18 +23,40 @@ public class MedicalOffice {
     private ArrayList<Patient> patients;
     private ArrayList<Employee> employees;
     private Map<Appointment, Prescription> appointmentsAndPrescriptions;
+    private ArrayList<MedicalRecords> medicalrecords;
 
-
-    private MedicalOffice() {
+    private MedicalOffice() throws Exception {
 
         officeName = "Catena";
         employees = new ArrayList<>();
         patients = new ArrayList<>();
         appointmentsAndPrescriptions = new TreeMap<>();
+        medicalrecords = new ArrayList<>();
+
+        employees.addAll(this.reader("src/doctors.csv", "doctor"));
+        employees.addAll(this.reader("src/assistants.csv", "assistant"));
+
+        patients.addAll(this.reader("src/adults.csv", "adult"));
+        patients.addAll(this.reader("src/children.csv", "child"));
+
+        medicalrecords.addAll(this.reader("src/medicalRecords.csv", "medicalRecords"));
+        for(MedicalRecords medRec : medicalrecords){
+            Patient patient = patients.stream()
+                    .filter(p -> p.getIdPatient() == medRec.getPatientId())
+                    .findAny()
+                    .orElse(null);
+            patient.setRecords(medRec);
+        }
+
+        ArrayList<Appointment> apps = new ArrayList<>();
+        apps.addAll(this.reader("src/appointments.csv", "Appointment"));
+        for(Appointment app : apps){
+            appointmentsAndPrescriptions.put(app, null);
+        }
 
     }
 
-    public static MedicalOffice getInstance() {
+    public static MedicalOffice getInstance() throws Exception {
 
         if (medicalOffice == null)
 
@@ -54,7 +78,7 @@ public class MedicalOffice {
         System.out.println("Medical Office: " + officeName);
 
     }
-    public Employee addEmployee(){
+    public Employee addEmployee() throws IOException {  // la adaugare se va scrie si in csv-ul aferent
 
         Employee emp = null;
 
@@ -92,12 +116,14 @@ public class MedicalOffice {
                 Specialization spec = Specialization.valueOf(strSpec);
                 emp = new Doctor(fName, lName, age, salary, yrsOfExp, shift, spec);
                 employees.add(emp);
+                this.writer("src/doctors.csv", emp);
             } else{
                 System.out.println("Enter bonus income: ");
                 int bonus = scanner.nextInt();
 
                 emp = new Assistant(fName, lName, age, salary, yrsOfExp, bonus);
                 employees.add(emp);
+                this.writer("src/assistants.csv", emp);
             }
         } else{
             System.out.println("Invalid choice!");
@@ -155,6 +181,7 @@ public class MedicalOffice {
                 String father = scanner.nextLine();
                 patient = new Child(fName, lName, age, mother, father);
                 patients.add(patient);
+                this.writer("src/children.csv", patient);
             }else{
                 while(age < 18){
                     System.out.println("Age must be at least 18! Enter valid age: ");
@@ -171,12 +198,14 @@ public class MedicalOffice {
 
                 patient = new Adult(fName, lName, age, phone);
                 patients.add(patient);
+                this.writer("src/adults.csv", patient);
             }
         } else{
             System.out.println("Invalid choice!");
         }
         return patient;
     }
+
     public Appointment addAppointment() throws Exception {
         Appointment appointment;
         Scanner scan = new Scanner(System.in);
@@ -231,6 +260,7 @@ public class MedicalOffice {
         Double price = scan.nextDouble();
 
         appointment = new Appointment(date, startTime, endTime, patient, employee, price);
+        this.writer("src/appointments.csv", appointment);
         appointmentsAndPrescriptions.put(appointment, null);
         return appointment;
     }
@@ -270,7 +300,7 @@ public class MedicalOffice {
         }
     }
 
-    public Prescription addPrescription(){
+    public Prescription addPrescription() throws IOException {
         System.out.println("Patients: ");
         this.showPatients();
         System.out.println("Pick the id of a patient to write the prescription to:");
@@ -326,7 +356,7 @@ public class MedicalOffice {
         return  prescription;
     }
 
-    public List<Medicine> prescribeMeds(){
+    public List<Medicine> prescribeMeds() throws IOException {
         System.out.println("Add medicine to prescription");
         Scanner scan = new Scanner(System.in);
 
@@ -359,7 +389,9 @@ public class MedicalOffice {
                 addNewMeds = false;
             }
         }while (addNewMeds);
-
+        for (Medicine m : meds){
+            this.writer("src/meds.csv", m);
+        }
         return meds;
     }
 
@@ -424,7 +456,7 @@ public class MedicalOffice {
         if(patient.getRecords() != null){
             return false;
         }
-        System.out.println("Enter height (m): ");
+        System.out.println("Enter height (cm): ");
         int height = scan.nextInt();
         System.out.println("Enter weight (kg): ");
         int weight = scan.nextInt();
@@ -446,7 +478,10 @@ public class MedicalOffice {
         int diastolicPressure = scan.nextInt();
         System.out.println("Enter average heart rate (bpm): ");
         int avgHeartRate = scan.nextInt();
-        patient.setRecords(new MedicalRecords(height, weight, gender, systolicPressure, diastolicPressure, avgHeartRate));
+        MedicalRecords medRec = new MedicalRecords(height, weight, gender, systolicPressure, diastolicPressure, avgHeartRate);
+        medRec.setPatientId(patient.getIdPatient());
+        patient.setRecords(medRec);
+        this.writer("src/medicalRecords.csv", medRec);
         return true;
     }
 
@@ -471,5 +506,192 @@ public class MedicalOffice {
                 id ++;
             }
         }
+    }
+    // metoda generica de citire din csv
+    public <T> ArrayList<T> reader(String pathToCsv, String option) throws Exception {
+        File csvFile = new File(pathToCsv);
+        ArrayList<T> objects = new ArrayList<>();
+        if (csvFile.isFile()) {
+            BufferedReader csvReader = new BufferedReader(new FileReader(pathToCsv));
+            String row;
+            csvReader.readLine();
+            while ((row = csvReader.readLine()) != null) {
+                String[] data = row.split(",");
+
+                if (option.toLowerCase().equals("doctor")) {
+                    String fname = data[0];
+                    String lname = data[1];
+                    int age = Integer.parseInt(data[2]);
+                    int salary = Integer.parseInt(data[3]);
+                    int yrsxp = Integer.parseInt(data[4]);
+                    Shift shift = Shift.valueOf(data[5]);
+                    Specialization spec = Specialization.valueOf(data[6]);
+                    objects.add((T) new Doctor(fname, lname, age, salary, yrsxp, shift, spec));
+                }
+                else if (option.toLowerCase().equals("assistant")) {
+                    String fname = data[0];
+                    String lname = data[1];
+                    int age = Integer.parseInt(data[2]);
+                    int salary = Integer.parseInt(data[3]);
+                    int yrsxp = Integer.parseInt(data[4]);
+                    int bonus = Integer.parseInt(data[5]);
+                    objects.add((T) new Assistant(fname, lname, age, salary, yrsxp, bonus));
+                }
+                else if (option.toLowerCase().equals("child")) {
+                    String fname = data[0];
+                    String lname = data[1];
+                    int age = Integer.parseInt(data[2]);
+                    String nameM = data[3];
+                    String nameF = data[4];
+                    objects.add((T) new Child(fname, lname, age, nameM, nameF));
+                }
+                else if (option.toLowerCase().equals("adult")) {
+                    String fname = data[0];
+                    String lname = data[1];
+                    int age = Integer.parseInt(data[2]);
+                    String phoneNum = data[3];
+
+                    objects.add((T) new Adult(fname, lname, age, phoneNum));
+                }
+                else if (option.toLowerCase().equals("medicine")) {
+                    String name = data[0];
+                    int price = Integer.parseInt(data[1]);;
+                    int quantity = Integer.parseInt(data[2]);
+
+                    objects.add((T) new Medicine(name, price, quantity));
+                }
+                else if (option.toLowerCase().equals("medicalrecords")){
+                    int height = Integer.parseInt(data[0]);
+                    int weight = Integer.parseInt(data[1]);
+                    String gender = data[2];
+                    int sysBP = Integer.parseInt(data[3]);
+                    int diaBP = Integer.parseInt(data[4]);
+                    int avgHR = Integer.parseInt(data[5]);
+                    int pId = Integer.parseInt((data[6]));
+                    MedicalRecords mr = new MedicalRecords(height, weight, gender, sysBP, diaBP, avgHR);
+                    mr.setPatientId(pId);
+                    objects.add((T) mr);
+                }
+                else if (option.toLowerCase().equals("appointment")){
+                    String date = data[0];
+                    String stime = data[1];
+                    String etime = data[2];
+                    Double price = Double.parseDouble(data[3]);
+                    int patId = Integer.parseInt(data[4]);
+                    int empId = Integer.parseInt(data[5]);
+                    Patient patient = patients.stream()
+                            .filter(p -> patId == p.getIdPatient())
+                            .findAny().orElse(null);
+                    Employee emp = employees.stream()
+                            .filter(e -> empId == e.getIdEmployee())
+                            .findAny().orElse(null);
+                    Appointment app = new Appointment(date, stime, etime, patient, emp, price);
+                    objects.add((T) app);
+                }
+            }
+//            csvReader.close();
+//            for (T doc : objects){
+//                System.out.println(doc);
+//            }
+        }
+        return objects;
+    }
+    // metoda generica de scriere in csv
+    public static <T> void writer(String pathToCsv, T object) throws IOException {
+        File csvFile = new File(pathToCsv);
+        if (csvFile.isFile()) {
+            FileWriter csvWriter = new FileWriter(pathToCsv, true);
+            if(csvFile.length() == 0) {  // daca e gol
+                if(object.getClass().getSimpleName().equals("Doctor")){
+                    csvWriter.append("First Name,Last Name,Age,Salary,Years of Experience,Shift,Specialization\n");
+                }
+                else if(object.getClass().getSimpleName().equals("Assistant")){
+                    csvWriter.append("First Name,Last Name,Age,Salary,Years of Experience, Bonus\n");
+                }
+                else if(object.getClass().getSimpleName().equals("Adult")){
+                    csvWriter.append("First Name,Last Name,Age,Phone Number\n");
+                }
+                else if(object.getClass().getSimpleName().equals("Child")){
+                    csvWriter.append("First Name,Last Name,Age,Mother's Name,Father's Name\n");
+                }
+                else if(object.getClass().getSimpleName().equals("Medicine")){
+                    csvWriter.append("Name,Price,Quantity\n");
+                }
+                else if(object.getClass().getSimpleName().equals("MedicalRecords")){
+                    csvWriter.append("Height,Weight,Gender,Systolic Blood Pressure, Diastolic Blood Pressure, Avg. HeartReate, PatientId\n");
+                }
+                else if(object.getClass().getSimpleName().equals("Appointment")){
+                    csvWriter.append("Date,Start Time, End Time, Price, PatientId, EmployeeId\n");
+                }
+            }
+            if(object.getClass().getSimpleName().equals("Doctor")){
+                Doctor doc = (Doctor) object;
+                csvWriter.append(doc.getFirstName() + ",");
+                csvWriter.append(doc.getLastName() + ",");
+                csvWriter.append(String.valueOf(doc.getAge()) + ",");
+                csvWriter.append(String.valueOf(doc.getSalary()) + ",");
+                csvWriter.append(String.valueOf(doc.getYearsOfExperience()) + ",");
+                csvWriter.append(doc.getShift().toString() + ",");
+                csvWriter.append(doc.getSpecialization().toString() + "\n");
+            }
+            else if(object.getClass().getSimpleName().equals("Assistant")){
+                Assistant assistant = (Assistant) object;
+                csvWriter.append(assistant.getFirstName() + ",");
+                csvWriter.append(assistant.getLastName() + ",");
+                csvWriter.append(String.valueOf(assistant.getAge()) + ",");
+                csvWriter.append(String.valueOf(assistant.getSalary()) + ",");
+                csvWriter.append(String.valueOf(assistant.getYearsOfExperience()) + ",");
+                csvWriter.append(String.valueOf(assistant.getBonus()) + "\n");
+            }
+            else if(object.getClass().getSimpleName().equals("Adult")){
+                Adult adult = (Adult) object;
+                csvWriter.append(adult.getFirstName() + ",");
+                csvWriter.append(adult.getLastName() + ",");
+                csvWriter.append(String.valueOf(adult.getAge()) + ",");
+                csvWriter.append(adult.getPhoneNumber() + "\n");
+            }
+            else if(object.getClass().getSimpleName().equals("Child")){
+                Child child = (Child) object;
+                csvWriter.append(child.getFirstName() + ",");
+                csvWriter.append(child.getLastName() + ",");
+                csvWriter.append(String.valueOf(child.getAge()) + ",");
+                csvWriter.append(child.getMotherName() + ",");
+                csvWriter.append((child.getFatherName()) + "\n");
+            }
+            else if(object.getClass().getSimpleName().equals("MedicalRecords")){
+                MedicalRecords mr = (MedicalRecords) object;
+                csvWriter.append(String.valueOf(mr.getHeight()) + ",");
+                csvWriter.append(String.valueOf(mr.getWeight()) + ",");
+                csvWriter.append(mr.getGender() + ",");
+                csvWriter.append(String.valueOf(mr.getSystolicBloodPressure()) + ",");
+                csvWriter.append(String.valueOf(mr.getDiastolicBloodPressure()) + ",");
+                csvWriter.append(String.valueOf(mr.getAverageHeartRate()) + ",");
+                csvWriter.append(String.valueOf(mr.getPatientId()) + "\n");
+            }
+            else if(object.getClass().getSimpleName().equals("Appointment")){
+                Appointment app = (Appointment) object;
+                csvWriter.append(app.getDate() + ",");
+                csvWriter.append(app.getStartTime() + ",");
+                csvWriter.append(app.getEndTime() + ",");
+                csvWriter.append(app.getPrice() + ",");
+                csvWriter.append(String.valueOf(app.getPatient().getIdPatient()) + ",");
+                csvWriter.append(String.valueOf(app.getEmployee().getIdEmployee()) + "\n");
+            }
+            csvWriter.close();
+        }
+    }
+    // metoda pentru audit
+    public static void audit(String action, Timestamp timestamp) throws IOException {
+        String pathToCsv = "src/audit.csv";
+        File csvFile = new File(pathToCsv);
+        FileWriter csvWriter = new FileWriter(pathToCsv, true);
+        if (csvFile.isFile()) {
+            if(csvFile.length() == 0) {
+                csvWriter.append("Action,Timestamp\n");
+            }
+            csvWriter.append(action + "," + timestamp.toString() + "\n");
+
+        }
+        csvWriter.close();
     }
 }

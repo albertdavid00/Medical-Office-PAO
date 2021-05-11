@@ -17,6 +17,8 @@ public class Appointment implements Comparable<Appointment> {
     private Patient patient;
     private Employee employee;
     private Double price;
+    private static int counterApp = 0;
+    private int idAppointment;
 
     public Appointment(String date, String startTime, String endTime, Patient patient, Employee employee, Double price) {
         this.date = date;
@@ -26,6 +28,24 @@ public class Appointment implements Comparable<Appointment> {
         this.employee = employee;
         this.price = price;
         this.discounted = false;
+        counterApp ++;
+        idAppointment = counterApp;
+    }
+
+    public static int getCounterApp() {
+        return counterApp;
+    }
+
+    public static void setCounterApp(int counterApp) {
+        Appointment.counterApp = counterApp;
+    }
+
+    public int getIdAppointment() {
+        return idAppointment;
+    }
+
+    public void setIdAppointment(int idAppointment) {
+        this.idAppointment = idAppointment;
     }
 
     public String getDate() { return date; }

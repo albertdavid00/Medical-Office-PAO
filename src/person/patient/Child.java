@@ -12,7 +12,7 @@ public class Child extends Patient {
         this.motherName = motherName;
         this.fatherName = fatherName;
         if(age >= 18){
-            setId(getId()-1);
+            setCounterPatients(getCounterPatients()-1);
             throw new Exception("Child can't be 18 years old or older");
         }
     }

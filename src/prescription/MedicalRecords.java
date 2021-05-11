@@ -7,6 +7,10 @@ public class MedicalRecords {
     String gender;
     int systolicBloodPressure, diastolicBloodPressure;
     int averageHeartRate;
+    private static int counterMRec = 0;
+    private int idMedRec;
+    private int patientId;
+
 
     public MedicalRecords() {
         height = 0;
@@ -15,6 +19,9 @@ public class MedicalRecords {
         systolicBloodPressure = 0;
         diastolicBloodPressure = 0;
         averageHeartRate = 0;
+        counterMRec ++;
+        idMedRec = counterMRec;
+        patientId = -1;
     }
 
     public MedicalRecords(int height, int weight, String gender, int systolicBloodPressure, int diastolicBloodPressure, int averageHeartRate) {
@@ -24,6 +31,32 @@ public class MedicalRecords {
         this.systolicBloodPressure = systolicBloodPressure;
         this.diastolicBloodPressure = diastolicBloodPressure;
         this.averageHeartRate = averageHeartRate;
+        counterMRec ++;
+        this.idMedRec = counterMRec;
+        patientId = -1;
+    }
+    public int getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(int patientId) {
+        this.patientId = patientId;
+    }
+
+    public static int getCounterMRec() {
+        return counterMRec;
+    }
+
+    public static void setCounterMRec(int counterMRec) {
+        MedicalRecords.counterMRec = counterMRec;
+    }
+
+    public int getIdMedRec() {
+        return idMedRec;
+    }
+
+    public void setIdMedRec(int idMedRec) {
+        this.idMedRec = idMedRec;
     }
 
     public int getHeight() { return height; }

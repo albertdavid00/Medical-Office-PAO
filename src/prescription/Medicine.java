@@ -6,11 +6,40 @@ public class Medicine {
     private String medName;
     private int price;
     private int quantity;
+    private int prescriptionId;
+    private int idMedicine;
+    private static int counterMed = 0;
 
     public Medicine(String medName, int price, int quantity) {
         this.medName = medName;
         this.price = price;
         this.quantity = quantity;
+        prescriptionId = -1;
+        counterMed++;
+        idMedicine = counterMed;
+    }
+    public int getIdMedicine() {
+        return idMedicine;
+    }
+
+    public void setIdMedicine(int idMedicine) {
+        this.idMedicine = idMedicine;
+    }
+
+    public static int getCounterMed() {
+        return counterMed;
+    }
+
+    public static void setCounterMed(int counterMed) {
+        Medicine.counterMed = counterMed;
+    }
+
+    public int getPrescriptionId() {
+        return prescriptionId;
+    }
+
+    public void setPrescriptionId(int prescriptionId) {
+        this.prescriptionId = prescriptionId;
     }
 
     public String getMedName() { return medName; }

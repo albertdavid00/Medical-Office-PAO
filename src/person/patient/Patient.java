@@ -6,19 +6,25 @@ import prescription.MedicalRecords;
 import java.util.Objects;
 
 public abstract class Patient extends Person {
-    private static int idPatient = 0;
+    private static int counterPatients = 0;
+    private int idPatient;
     private MedicalRecords records;
 
-    public Patient(){ idPatient ++; }
+    public Patient(){ counterPatients ++; idPatient = counterPatients;}
     public Patient(String firstName, String lastName, int age){
         super(firstName, lastName, age);
-        idPatient++;
+        counterPatients++;
+        idPatient = counterPatients;
         //this.records = new MedicalRecords();
     }
 
-    public static int getId() { return idPatient; }
+    public int getIdPatient() { return idPatient; }
 
-    public static void setId(int id) { Patient.idPatient = id; }
+    public void setIdPatient(int idPatient) { this.idPatient = idPatient; }
+
+    public static int getCounterPatients() { return counterPatients; }
+
+    public static void setCounterPatients(int id) { Patient.counterPatients = id; }
 
     public MedicalRecords getRecords() { return records; }
 

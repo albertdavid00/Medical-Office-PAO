@@ -5,6 +5,7 @@ import person.employee.*;
 import person.patient.Child;
 import person.patient.Patient;
 
+import java.sql.Timestamp;
 import java.util.Scanner;
 
 public class Menu {
@@ -31,12 +32,12 @@ public class Menu {
     }
     public static void menuOutput() throws Exception {
         MedicalOffice office = MedicalOffice.getInstance();
-        Employee asistent = new Assistant("Jane", "Wilson", 27, 2500, 5, 100);
-        Employee doctor = new Doctor("John", "Carter", 39, 5000, 15, Shift.Night, Specialization.Pediatry);
-        office.addEmployee(asistent);
-        office.addEmployee(doctor);
-        Patient kid = new Child("Jamie", "Dixon", 14, "Kate", "Bruce");
-        office.addPatient(kid);
+//        Employee asistent = new Assistant("Jane", "Wilson", 27, 2500, 5, 100);
+//        Employee doctor = new Doctor("John", "Carter", 39, 5000, 15, Shift.Night, Specialization.Pediatry);
+//        office.addEmployee(asistent);
+//        office.addEmployee(doctor);
+//        Patient kid = new Child("Jamie", "Dixon", 14, "Kate", "Bruce");
+//        office.addPatient(kid);
 
 
         int option;
@@ -48,57 +49,68 @@ public class Menu {
 
             if (option == 1) {
                 office.addEmployee();
+                MedicalOffice.audit("Add employee", new Timestamp(System.currentTimeMillis()));
                 System.out.println("\nEmployee added successfully!\nPress Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
 
             } else if (option == 2) {
                 office.addPatient();
+                MedicalOffice.audit("Add patient", new Timestamp(System.currentTimeMillis()));
                 System.out.println("\nPatient added successfully!\nPress Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
 
             }else if (option == 3){
                 office.showEmployees();
+                MedicalOffice.audit("Show employees", new Timestamp(System.currentTimeMillis()));
                 System.out.println("Press Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
             }
             else if (option == 4){
                 office.showPatients();
+                MedicalOffice.audit("Show patients", new Timestamp(System.currentTimeMillis()));
                 System.out.println("Press Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
             }
             else if (option == 5){
                 office.addAppointment();
+                MedicalOffice.audit("Add appointment", new Timestamp(System.currentTimeMillis()));
                 System.out.println("Appointment made successfully! Press Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
             }
             else if (option == 6){
                 office.showAppointments();
+                MedicalOffice.audit("Show appointments", new Timestamp(System.currentTimeMillis()));
                 System.out.println("Press Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
             }
             else if (option == 7){
                 office.addPrescription();
+                MedicalOffice.audit("Add prescription", new Timestamp(System.currentTimeMillis()));
                 System.out.println("Prescription made successfully! Press Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
             }
             else if (option == 8){
                 office.showPrescriptions();
+                MedicalOffice.audit("Show prescriptions", new Timestamp(System.currentTimeMillis()));
                 System.out.println("Press Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
             }
             else if (option == 9){
                 office.customSortEmployees();
+                MedicalOffice.audit("Custom sort employees", new Timestamp(System.currentTimeMillis()));
                 System.out.println("Press Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
             }
             else if (option == 10){
                 office.discountForChildren();
+                MedicalOffice.audit("Apply Discount", new Timestamp(System.currentTimeMillis()));
                 System.out.println("50% discount applied successfully! Press Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
             }
             else if (option == 11){
                 boolean check = office.addMedicalRecords();
                 if(check) {
+                    MedicalOffice.audit("Add medical records", new Timestamp(System.currentTimeMillis()));
                     System.out.println("Medical records added successfully! Press Any Key To Continue...");
                 }else{
                     System.out.println("Patient already has records or the entered data are invalid. Press Any Key to Continue...");
@@ -107,11 +119,13 @@ public class Menu {
             }
             else if (option == 12){
                 office.showMedicalRecords();
+                MedicalOffice.audit("Show medical records", new Timestamp(System.currentTimeMillis()));
                 System.out.println("Press Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
             }
             else if (option == 13){
                 office.showHeartDiseaseRisk();
+                MedicalOffice.audit("Calculate Heart Disease Risk", new Timestamp(System.currentTimeMillis()));
                 System.out.println("Press Any Key To Continue...");
                 new java.util.Scanner(System.in).nextLine();
             }

@@ -13,8 +13,13 @@ public class Prescription {
     private Employee employee;
     private Diagnosis diagnosis;
     private List<Medicine> meds;
+    private static int  counterPrescription = 0;
+    private int idPrescription;
+
 
     public Prescription(Patient patient, Employee employee, Diagnosis diagnosis) {
+        counterPrescription ++;
+        idPrescription = counterPrescription;
         this.patient = patient;
         this.employee = employee;
         this.diagnosis = diagnosis;
@@ -26,6 +31,25 @@ public class Prescription {
         this.employee = employee;
         this.diagnosis = diagnosis;
         this.meds = meds;
+        counterPrescription ++;
+        idPrescription = counterPrescription;
+    }
+
+
+    public static int getCounterPrescription() {
+        return counterPrescription;
+    }
+
+    public static void setCounterPrescription(int counterPrescription) {
+        Prescription.counterPrescription = counterPrescription;
+    }
+
+    public int getIdPrescription() {
+        return idPrescription;
+    }
+
+    public void setIdPrescription(int idPrescription) {
+        this.idPrescription = idPrescription;
     }
 
     public Patient getPatient() {

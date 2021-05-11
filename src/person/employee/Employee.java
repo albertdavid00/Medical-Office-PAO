@@ -5,21 +5,28 @@ import person.Person;
 import java.util.Objects;
 
 public abstract class Employee extends Person {
-    private static int idEmployee = 0;
+    private static int counterEmployee = 0;
+    private int idEmployee;
+
     protected static final int taxPercentage = 10;    // taxa pe venit
     protected int salary;
     protected int yearsOfExperience;
 
     public Employee(String firstName, String lastName, int age, int salary, int yearsOfExperience){
         super(firstName, lastName, age);
-        idEmployee++;
+        counterEmployee++;
+        idEmployee = counterEmployee;
         this.salary = salary;
         this.yearsOfExperience = yearsOfExperience;
     }
 
-    public static int getIdEmployee() { return idEmployee; }
+    public int getIdEmployee() { return idEmployee; }
 
-    public static void setIdEmployee(int idEmployee) { Employee.idEmployee = idEmployee; }
+    public void setIdEmployee(int idEmployee) { this.idEmployee = idEmployee; }
+
+    public static int getCounterEmployee() { return counterEmployee; }
+
+    public static void setCounterEmployee(int cEmployee) { Employee.counterEmployee = cEmployee; }
 
     public int getSalary() { return salary; }
 
