@@ -1,7 +1,7 @@
 # **Medical Office**
-###Classes
+### Classes
 
-* Person 
+* Person
     * abstract class
         - First name
         - Last name
@@ -14,48 +14,48 @@
         - Id
         - Medical Records
     * calculate heart disease risk
-    
-* Adult 
+
+* Adult
     * extends Patient
         - Phone number
 
-* Child 
+* Child
     * extends Patient
         - Mother's name
         - Father's name
-    
+
 * Employee
     * abstract class
     * extends Patient
-        - Id 
+        - Id
         - Tax percentage
         - Salary
         - Years of Experience
-    
+
 * Doctor
     * extends Employee
         - Shift
         - Specialization
     * calculate annual income
     * check for night shift bonus
-    
+
 * Assistant
     * extends Employee
         - bonus
     * calculate annual income
-    
+
 * Prescription
     * Aggregation
         - Patient
         - Employee
         - Diagnosis
         - Medicine - Linked List
-    
+
 * Medicine
     * Name
     * Price
     * Quantity
-    
+
 * Appointment
     * Aggregation
         * Discount
@@ -66,25 +66,25 @@
         * Price
     * Calculate duration of the appointment
     * Apply discount for children
-    
+
 * MedicalRecords
-    * gender    
+    * gender
     * height, weight
     * systolic / diastolic blood pressure
     * average heart rate
-    
+
 ####Enums
 * Shift
-* Specialization 
+* Specialization
 * Diagnosis
-    
+
 ###Service Class
 * MedicalOffice
     * Singleton pattern
         * Office Name
         * Patients - ArrayList
         * Employees - ArrayList
-        * Appointments & Prescriptions - TreeMap 
+        * Appointments & Prescriptions - TreeMap
     * Actions
         1. Add a new employee to the list
         2. Add a new patient to the list
@@ -92,8 +92,8 @@
             - Phone number validation
         3. Print the list of employees
         4. Print the list of patients
-        5. Make a new appointment 
-            - checked if any appointments are overlapping 
+        5. Make a new appointment
+            - checked if any appointments are overlapping
         6. Print list of appointments ordered by date and time
             - custom comparator for date and time sorting
         7. Write prescription for a patient and assign it to an appointment
@@ -105,7 +105,7 @@
         10. Apply discount for all of children's appointments
         11. Add medical records to a patient
         12. Show medical records for all patients
-        13. Calculate Heart Disease Risk based on medical records' data 
-    
-* Menu 
+        13. Calculate Heart Disease Risk based on medical records' data
+
+* Menu
     * calls all the actions from above 
