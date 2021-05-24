@@ -6,6 +6,11 @@ import java.util.Scanner;
 public class Adult extends Patient{
     protected String phoneNumber;
 
+    public Adult(int id, String fname, String lname, int age, String pN) {
+        super(fname, lname, age);
+        this.phoneNumber = pN;
+        this.setIdPatient(id);
+    }
     public Adult(String firstName, String lastName, int age, String phoneNumber) throws Exception {
         super(firstName, lastName, age);
         this.phoneNumber = phoneNumber;
@@ -20,6 +25,30 @@ public class Adult extends Patient{
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public static Adult read() throws Exception {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter first name: ");
+        String fName = scanner.nextLine();
+        System.out.println("Enter last name: ");
+        String lName = scanner.nextLine();
+
+        System.out.println("Enter age: ");
+        int age = scanner.nextInt();
+        while(age < 18){
+            System.out.println("Age must be at least 18! Enter valid age: ");
+            age = scanner.nextInt();
+        }
+        scanner.nextLine();
+
+        System.out.println("Phone number: ");
+        String phone = scanner.nextLine();
+        while(!phone.matches("^0[0-9]{9}$")){
+            System.out.println("Invalid phone number. Enter a valid one: ");
+            phone = scanner.nextLine();
+        }
+        return new Adult(fName, lName, age, phone);
     }
 
     @Override

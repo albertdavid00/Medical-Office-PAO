@@ -1,6 +1,7 @@
 package office;
 
 import appointment.Appointment;
+import main.Service;
 import person.employee.*;
 import person.patient.Adult;
 import person.patient.Child;
@@ -25,6 +26,38 @@ public class MedicalOffice {
     private Map<Appointment, Prescription> appointmentsAndPrescriptions;
     private ArrayList<MedicalRecords> medicalrecords;
 
+    public ArrayList<Patient> getPatients() {
+        return patients;
+    }
+
+    public void setPatients(ArrayList<Patient> patients) {
+        this.patients = patients;
+    }
+
+    public ArrayList<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(ArrayList<Employee> employees) {
+        this.employees = employees;
+    }
+
+    public Map<Appointment, Prescription> getAppointmentsAndPrescriptions() {
+        return appointmentsAndPrescriptions;
+    }
+
+    public void setAppointmentsAndPrescriptions(Map<Appointment, Prescription> appointmentsAndPrescriptions) {
+        this.appointmentsAndPrescriptions = appointmentsAndPrescriptions;
+    }
+
+    public ArrayList<MedicalRecords> getMedicalrecords() {
+        return medicalrecords;
+    }
+
+    public void setMedicalrecords(ArrayList<MedicalRecords> medicalrecords) {
+        this.medicalrecords = medicalrecords;
+    }
+
     private MedicalOffice() throws Exception {
 
         officeName = "Catena";
@@ -33,13 +66,13 @@ public class MedicalOffice {
         appointmentsAndPrescriptions = new TreeMap<>();
         medicalrecords = new ArrayList<>();
 
-        employees.addAll(this.reader("src/doctors.csv", "doctor"));
-        employees.addAll(this.reader("src/assistants.csv", "assistant"));
+        employees.addAll(Service.reader("src/resources/doctors.csv", "doctor", this));
+        employees.addAll(Service.reader("src/resources/assistants.csv", "assistant", this));
 
-        patients.addAll(this.reader("src/adults.csv", "adult"));
-        patients.addAll(this.reader("src/children.csv", "child"));
+        patients.addAll(Service.reader("src/resources/adults.csv", "adult", this));
+        patients.addAll(Service.reader("src/resources/children.csv", "child", this));
 
-        medicalrecords.addAll(this.reader("src/medicalRecords.csv", "medicalRecords"));
+        medicalrecords.addAll(Service.reader("src/resources/medicalRecords.csv", "medicalRecords", this));
         for(MedicalRecords medRec : medicalrecords){
             Patient patient = patients.stream()
                     .filter(p -> p.getIdPatient() == medRec.getPatientId())
@@ -49,7 +82,7 @@ public class MedicalOffice {
         }
 
         ArrayList<Appointment> apps = new ArrayList<>();
-        apps.addAll(this.reader("src/appointments.csv", "Appointment"));
+        apps.addAll(Service.reader("src/resources/appointments.csv", "Appointment", this));
         for(Appointment app : apps){
             appointmentsAndPrescriptions.put(app, null);
         }
@@ -89,41 +122,16 @@ public class MedicalOffice {
 
         if(choice == 1 || choice == 2) {
 
-            System.out.println("Enter first name: ");
-            String fName = scanner.nextLine();
-            System.out.println("Enter last name: ");
-            String lName = scanner.nextLine();
-
-            System.out.println("Enter age: ");
-            int age = scanner.nextInt();
-            scanner.nextLine();
-
-            System.out.println("Enter salary: ");
-            int salary = scanner.nextInt();
-
-            System.out.println("Enter years of experience: ");
-            int yrsOfExp = scanner.nextInt();
             if (choice == 1) {
-                scanner.nextLine();
-                System.out.println("Enter work shift (Morning / Afternoon / Night): ");
-                String strShift = scanner.nextLine().toLowerCase();
-                strShift = strShift.substring(0, 1).toUpperCase() + strShift.substring(1);
-                Shift shift = Shift.valueOf(strShift);
 
-                System.out.println("Enter specialization (Dermatology / Neurology / Ophtalmology / Psychiatry / Pediatry / Cardiology / Endocrinology): ");
-                String strSpec = scanner.nextLine().toLowerCase();
-                strSpec = strSpec.substring(0, 1).toUpperCase() + strSpec.substring(1);
-                Specialization spec = Specialization.valueOf(strSpec);
-                emp = new Doctor(fName, lName, age, salary, yrsOfExp, shift, spec);
+                emp = Doctor.read();
                 employees.add(emp);
-                this.writer("src/doctors.csv", emp);
+                Service.writer("src/resources/doctors.csv", emp);
             } else{
-                System.out.println("Enter bonus income: ");
-                int bonus = scanner.nextInt();
 
-                emp = new Assistant(fName, lName, age, salary, yrsOfExp, bonus);
+                emp = Assistant.read();
                 employees.add(emp);
-                this.writer("src/assistants.csv", emp);
+                Service.writer("src/resources/assistants.csv", emp);
             }
         } else{
             System.out.println("Invalid choice!");
@@ -160,45 +168,17 @@ public class MedicalOffice {
         int choice = scanner.nextInt();
         scanner.nextLine();
         if (choice == 1 || choice == 2){
-            System.out.println("Enter first name: ");
-            String fName = scanner.nextLine();
-            System.out.println("Enter last name: ");
-            String lName = scanner.nextLine();
-
-            System.out.println("Enter age: ");
-            int age = scanner.nextInt();
-
 
             if(choice == 1){// Child
-                while(age >= 18){
-                    System.out.println("Age must be < 18! Enter valid age: ");
-                    age = scanner.nextInt();
-                }
-                scanner.nextLine();
-                System.out.println("Mother's name: ");
-                String mother = scanner.nextLine();
-                System.out.println("Father's name: ");
-                String father = scanner.nextLine();
-                patient = new Child(fName, lName, age, mother, father);
+
+                patient = Child.read();
                 patients.add(patient);
-                this.writer("src/children.csv", patient);
+                Service.writer("src/resources/children.csv", patient);
             }else{
-                while(age < 18){
-                    System.out.println("Age must be at least 18! Enter valid age: ");
-                    age = scanner.nextInt();
-                }
-                scanner.nextLine();
 
-                System.out.println("Phone number: ");
-                String phone = scanner.nextLine();
-                while(!phone.matches("^0[0-9]{9}$")){
-                    System.out.println("Invalid phone number. Enter a valid one: ");
-                    phone = scanner.nextLine();
-                }
-
-                patient = new Adult(fName, lName, age, phone);
+                patient = Adult.read();
                 patients.add(patient);
-                this.writer("src/adults.csv", patient);
+                Service.writer("src/resources/adults.csv", patient);
             }
         } else{
             System.out.println("Invalid choice!");
@@ -260,7 +240,7 @@ public class MedicalOffice {
         Double price = scan.nextDouble();
 
         appointment = new Appointment(date, startTime, endTime, patient, employee, price);
-        this.writer("src/appointments.csv", appointment);
+        Service.writer("src/resources/appointments.csv", appointment);
         appointmentsAndPrescriptions.put(appointment, null);
         return appointment;
     }
@@ -390,7 +370,7 @@ public class MedicalOffice {
             }
         }while (addNewMeds);
         for (Medicine m : meds){
-            this.writer("src/meds.csv", m);
+            Service.writer("src/resources/meds.csv", m);
         }
         return meds;
     }
@@ -481,7 +461,7 @@ public class MedicalOffice {
         MedicalRecords medRec = new MedicalRecords(height, weight, gender, systolicPressure, diastolicPressure, avgHeartRate);
         medRec.setPatientId(patient.getIdPatient());
         patient.setRecords(medRec);
-        this.writer("src/medicalRecords.csv", medRec);
+        Service.writer("src/resources/medicalRecords.csv", medRec);
         return true;
     }
 
@@ -507,7 +487,7 @@ public class MedicalOffice {
             }
         }
     }
-    // metoda generica de citire din csv
+  /*  // metoda generica de citire din csv
     public <T> ArrayList<T> reader(String pathToCsv, String option) throws Exception {
         File csvFile = new File(pathToCsv);
         ArrayList<T> objects = new ArrayList<>();
@@ -595,9 +575,9 @@ public class MedicalOffice {
 //            }
         }
         return objects;
-    }
+    }*/
     // metoda generica de scriere in csv
-    public static <T> void writer(String pathToCsv, T object) throws IOException {
+    /*public static <T> void writer(String pathToCsv, T object) throws IOException {
         File csvFile = new File(pathToCsv);
         if (csvFile.isFile()) {
             FileWriter csvWriter = new FileWriter(pathToCsv, true);
@@ -679,8 +659,8 @@ public class MedicalOffice {
             }
             csvWriter.close();
         }
-    }
-    // metoda pentru audit
+    }*/
+   /* // metoda pentru audit
     public static void audit(String action, Timestamp timestamp) throws IOException {
         String pathToCsv = "src/audit.csv";
         File csvFile = new File(pathToCsv);
@@ -693,5 +673,5 @@ public class MedicalOffice {
 
         }
         csvWriter.close();
-    }
+    }*/
 }

@@ -3,10 +3,10 @@ package prescription;
 import java.util.Objects;
 
 public class MedicalRecords {
-    int height, weight;
-    String gender;
-    int systolicBloodPressure, diastolicBloodPressure;
-    int averageHeartRate;
+    private int height, weight;
+    private String gender;
+    private int systolicBloodPressure, diastolicBloodPressure;
+    private int averageHeartRate;
     private static int counterMRec = 0;
     private int idMedRec;
     private int patientId;
