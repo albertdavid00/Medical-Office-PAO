@@ -1,23 +1,28 @@
 package person.patient;
 
+import service.AdultCSVReaderWriter;
+import service.CSVCompatible;
+
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class Adult extends Patient{
+public class Adult extends Patient implements CSVCompatible {
     protected String phoneNumber;
+    private static AdultCSVReaderWriter csvReaderWriter = AdultCSVReaderWriter.getInstance();
 
     public Adult(int id, String fname, String lname, int age, String pN) {
         super(fname, lname, age);
         this.phoneNumber = pN;
         this.setIdPatient(id);
     }
-    public Adult(String firstName, String lastName, int age, String phoneNumber) throws Exception {
+    public Adult(String firstName, String lastName, int age, String phoneNumber) {
         super(firstName, lastName, age);
         this.phoneNumber = phoneNumber;
 
-        if(age < 18){
-            throw new Exception("Adults have to be at least 18 years old!");
-        }
+//        if(age < 18){
+//            throw new Exception("Adults have to be at least 18 years old!");
+//        }
     }
     public String getPhoneNumber() {
         return phoneNumber;
@@ -50,6 +55,17 @@ public class Adult extends Patient{
         }
         return new Adult(fName, lName, age, phone);
     }
+
+    public static List<Adult> getAdults(){
+        return csvReaderWriter.read();
+    }
+
+    public static void writeAdult(Adult object){
+        csvReaderWriter.write(object);
+    }
+
+
+
 
     @Override
     public String getType(){ return "Adult"; }

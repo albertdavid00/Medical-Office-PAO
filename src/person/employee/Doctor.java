@@ -1,13 +1,18 @@
 package person.employee;
 
+import service.AdultCSVReaderWriter;
+import service.CSVCompatible;
+import service.DoctorCSVReaderWriter;
+
 import javax.print.Doc;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class Doctor extends Employee{
+public class Doctor extends Employee implements CSVCompatible {
     private Shift shift;
     private Specialization specialization;
-
+    private static DoctorCSVReaderWriter csvReaderWriter = DoctorCSVReaderWriter.getInstance();
 
     public Doctor(int id, String firstName, String lastName, int age, int salary, int yrsOfExp, Shift shift, Specialization specialization){
         super(firstName, lastName, age, salary, yrsOfExp);
@@ -90,6 +95,13 @@ public class Doctor extends Employee{
         strSpec = strSpec.substring(0, 1).toUpperCase() + strSpec.substring(1);
         Specialization spec = Specialization.valueOf(strSpec);
         return new Doctor(fName, lName, age, salary, yrsOfExp, shift, spec);
+    }
+
+    public static List<Doctor> getDoctors(){
+        return csvReaderWriter.read();
+    }
+    public static void writeDoctor(Doctor object){
+        csvReaderWriter.write(object);
     }
     @Override
     public int hashCode() {

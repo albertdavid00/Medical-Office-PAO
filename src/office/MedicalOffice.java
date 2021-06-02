@@ -66,12 +66,15 @@ public class MedicalOffice {
         appointmentsAndPrescriptions = new TreeMap<>();
         medicalrecords = new ArrayList<>();
 
-        employees.addAll(Service.reader("src/resources/doctors.csv", "doctor", this));
-        employees.addAll(Service.reader("src/resources/assistants.csv", "assistant", this));
+        //employees.addAll(Service.reader("src/resources/doctors.csv", "doctor", this));
+        employees.addAll(Doctor.getDoctors());
+        employees.addAll(Assistant.getAssistants());
+        //employees.addAll(Service.reader("src/resources/assistants.csv", "assistant", this));
 
-        patients.addAll(Service.reader("src/resources/adults.csv", "adult", this));
-        patients.addAll(Service.reader("src/resources/children.csv", "child", this));
-
+        //patients.addAll(Service.reader("src/resources/adults.csv", "adult", this));
+        //patients.addAll(Service.reader("src/resources/children.csv", "child", this));
+        patients.addAll(Adult.getAdults());
+        patients.addAll(Child.getChildren());
         medicalrecords.addAll(Service.reader("src/resources/medicalRecords.csv", "medicalRecords", this));
         for(MedicalRecords medRec : medicalrecords){
             Patient patient = patients.stream()
@@ -126,12 +129,14 @@ public class MedicalOffice {
 
                 emp = Doctor.read();
                 employees.add(emp);
-                Service.writer("src/resources/doctors.csv", emp);
+                //Service.writer("src/resources/doctors.csv", emp);
+                Doctor.writeDoctor((Doctor) emp);
             } else{
 
                 emp = Assistant.read();
                 employees.add(emp);
-                Service.writer("src/resources/assistants.csv", emp);
+                //Service.writer("src/resources/assistants.csv", emp);
+                Assistant.writeAssistant((Assistant) emp);
             }
         } else{
             System.out.println("Invalid choice!");
@@ -173,12 +178,14 @@ public class MedicalOffice {
 
                 patient = Child.read();
                 patients.add(patient);
-                Service.writer("src/resources/children.csv", patient);
+                //Service.writer("src/resources/children.csv", patient);
+                Child.writeChild((Child) patient);
             }else{
 
                 patient = Adult.read();
                 patients.add(patient);
-                Service.writer("src/resources/adults.csv", patient);
+                //Service.writer("src/resources/adults.csv", patient);
+                Adult.writeAdult((Adult) patient);
             }
         } else{
             System.out.println("Invalid choice!");

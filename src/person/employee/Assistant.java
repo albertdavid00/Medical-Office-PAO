@@ -1,10 +1,16 @@
 package person.employee;
 
+import service.AdultCSVReaderWriter;
+import service.AssistantCSVReaderWriter;
+import service.CSVCompatible;
+
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class Assistant extends Employee{
+public class Assistant extends Employee implements CSVCompatible {
     private int bonus;
+    private static AssistantCSVReaderWriter csvReaderWriter = AssistantCSVReaderWriter.getInstance();
 
     public Assistant(int id, String firstName, String lastName, int age, int salary, int yrsOfExp, int bonus){
         super(firstName, lastName, age, salary, yrsOfExp);
@@ -45,6 +51,13 @@ public class Assistant extends Employee{
         int bonus = scanner.nextInt();
 
         return new Assistant(fName, lName, age, salary, yrsOfExp, bonus);
+    }
+
+    public static List<Assistant> getAssistants(){
+        return csvReaderWriter.read();
+    }
+    public static void writeAssistant(Assistant object){
+        csvReaderWriter.write(object);
     }
 
     @Override

@@ -1,11 +1,15 @@
 package person.patient;
 
 import person.Person;
+import service.CSVCompatible;
+import service.ChildCSVReaderWriter;
 
+import java.util.List;
 import java.util.Scanner;
 
-public class Child extends Patient {
+public class Child extends Patient implements CSVCompatible {
     protected String motherName, fatherName;
+    private static ChildCSVReaderWriter csvReaderWriter = ChildCSVReaderWriter.getInstance();
 
     public Child(int id, String firstName, String lastName, int age, String motherName, String fatherName) {
         super(firstName, lastName, age);
@@ -14,14 +18,14 @@ public class Child extends Patient {
         this.setIdPatient(id);
     }
 
-    public Child(String firstName, String lastName, int age, String motherName, String fatherName) throws Exception {
+    public Child(String firstName, String lastName, int age, String motherName, String fatherName) {
         super(firstName, lastName, age);
         this.motherName = motherName;
         this.fatherName = fatherName;
-        if(age >= 18){
-            setCounterPatients(getCounterPatients()-1);
-            throw new Exception("Child can't be 18 years old or older");
-        }
+//        if(age >= 18){
+//            setCounterPatients(getCounterPatients()-1);
+//            throw new Exception("Child can't be 18 years old or older");
+//        }
     }
 
     public String getMotherName() { return motherName; }
@@ -50,6 +54,14 @@ public class Child extends Patient {
         System.out.println("Father's name: ");
         String father = scanner.nextLine();
         return new Child(fName, lName, age, mother, father);
+    }
+
+    public static List<Child> getChildren(){
+        return csvReaderWriter.read();
+    }
+
+    public static void writeChild(Child object){
+        csvReaderWriter.write(object);
     }
     @Override
     public String getType(){ return "Child"; }

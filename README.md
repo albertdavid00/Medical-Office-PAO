@@ -73,12 +73,12 @@
     * systolic / diastolic blood pressure
     * average heart rate
 
-####Enums
+#### Enums
 * Shift
 * Specialization
 * Diagnosis
 
-###Service Class
+### Service Class
 * MedicalOffice
     * Singleton pattern
         * Office Name
